@@ -2,6 +2,7 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const consoletable = require('console.table');
 
+// connect to mysql db
 const connection = mysql.createConnection({
     host: 'localhost',
   
@@ -19,6 +20,7 @@ connection.connect((err) => {
     init();
 });
 
+// start the app
 const init = () => {
     inquirer
       .prompt({
@@ -72,6 +74,7 @@ const init = () => {
     });
 };
 
+// check all employees
 const checkAll = () => {
     const query =
         "SELECT employee.id AS 'ID', employee.first_name AS 'First Name', employee.last_name AS 'Last Name', role.title AS 'Title', department.name AS 'Department', role.salary AS 'Salary', CONCAT(e.first_name,' ',e.last_name) AS 'Manager' FROM employee INNER JOIN role ON role.id = employee.role_id INNER JOIN department ON department.id = role.department_id LEFT JOIN employee e ON employee.manager_id = e.id ORDER BY employee.id";
@@ -82,6 +85,7 @@ const checkAll = () => {
     })
 };
 
+// check employees by department
 const checkByD = () => {
     inquirer
       .prompt({
@@ -105,6 +109,7 @@ const checkByD = () => {
     });
 };
 
+// check employees by role
 const checkByM = () => {
     const query =
         "SELECT DISTINCT CONCAT(e.first_name,' ',e.last_name) AS 'Manager' FROM employee INNER JOIN role ON role.id = employee.role_id INNER JOIN department ON department.id = role.department_id LEFT JOIN employee e ON employee.manager_id = e.id WHERE CONCAT(e.first_name,' ',e.last_name) IS NOT NULL";
@@ -134,6 +139,7 @@ const checkByM = () => {
     })
 }
 
+// add an new employee
 const add = () => {
     const query =
         "SELECT first_name, last_name FROM employee";
@@ -202,6 +208,7 @@ const add = () => {
     })
 }
 
+// remove an employee
 const remove = () => {
     const query =
         "SELECT first_name, last_name FROM employee";
@@ -236,6 +243,7 @@ const remove = () => {
     })
 }
 
+// update an employee's role
 const updateRole = () => {
     const query =
         "SELECT first_name, last_name FROM employee";
@@ -287,6 +295,7 @@ const updateRole = () => {
     })
 }
 
+// update an employee's manager
 const updateManager = () => {
     const query =
         "SELECT first_name, last_name FROM employee";
