@@ -148,7 +148,7 @@ const add = () => {
         var convert5 = convert4.replace(/]/g,"");
         var convert6 = "Null ,"+convert5
         var out = convert6.split(',')
-        var departments = [
+        var roles = [
             'Sales Lead',
             'Salesperson',
             'Lead Engineer',
@@ -173,7 +173,7 @@ const add = () => {
                 name: "role",
                 type: "rawlist",
                 message: "What is the employee's role? ",
-                choices: departments
+                choices: roles
               },
               {
                 name: "manager",
@@ -185,7 +185,7 @@ const add = () => {
             const query =
                 "INSERT INTO employee SET ?";
             var managerid = out.indexOf(answer.manager);
-            var roleid = departments.indexOf(answer.role);
+            var roleid = roles.indexOf(answer.role) + 1;
             const add_e = 
             {
                 first_name: answer.firstname,
@@ -215,7 +215,6 @@ const remove = () => {
         var convert4 = convert3.replace(/[[]/g,"");
         var convert5 = convert4.replace(/]/g,"");
         var out = convert5.split(',')
-        console.log(out)
     inquirer
         .prompt([
               {
@@ -237,5 +236,96 @@ const remove = () => {
     })
 }
 
+const updateRole = () => {
+    const query =
+        "SELECT first_name, last_name FROM employee";
+    connection.query(query,(err, res) => {
+        if (err) throw err
+        var string = JSON.stringify(res).replace(/[{":}]/g,'');
+        var convert = string.replace(/,/g," ");
+        var convert1 = convert.replace(/first_name/gi,",");
+        var convert2 = convert1.replace(/last_name/gi,"");
+        var convert3 = convert2.replace(",","");
+        var convert4 = convert3.replace(/[[]/g,"");
+        var convert5 = convert4.replace(/]/g,"");
+        var out = convert5.split(',')
+        var roles = [
+            'Sales Lead',
+            'Salesperson',
+            'Lead Engineer',
+            'Software Engineer',
+            'Accountant',
+            'Legal Team Lead',
+            'Lawyer'
+        ]
+    inquirer
+        .prompt([
+              {
+                name: "employeeRole",
+                type: "rawlist",
+                message: "Which employee do you want to change role?",
+                choices: out
+              },
+              {
+                name: "employeerole",
+                type: "rawlist",
+                message: "What is the employee's role? ",
+                choices: roles
+              }
+        ]).then((answer) => {
+            var name = answer.employeeRole.split(" ");
+            var roleid = roles.indexOf(answer.employeerole) + 1;
+            console.log(roleid)
+            const query =
+                `UPDATE employee SET role_id = ${roleid} WHERE employee.first_name = '${name[0]}' AND employee.last_name = '${name[1]}'`;
+            connection.query(query,(err, res) => {
+                if (err) throw err
+                console.table(res)
+                init();
+            })
+        })
+    })
+}
 
-
+const updateManager = () => {
+    const query =
+        "SELECT first_name, last_name FROM employee";
+    connection.query(query,(err, res) => {
+        if (err) throw err
+        var string = JSON.stringify(res).replace(/[{":}]/g,'');
+        var convert = string.replace(/,/g," ");
+        var convert1 = convert.replace(/first_name/gi,",");
+        var convert2 = convert1.replace(/last_name/gi,"");
+        var convert3 = convert2.replace(",","");
+        var convert4 = convert3.replace(/[[]/g,"");
+        var convert5 = convert4.replace(/]/g,"");
+        var convert6 = "Null ,"+convert5;
+        var out = convert5.split(',');
+        var out1 = convert6.split(',');
+    inquirer
+        .prompt([
+              {
+                name: "employeeRole",
+                type: "rawlist",
+                message: "Which employee do you want to change manager?",
+                choices: out
+              },
+              {
+                name: "employeerole",
+                type: "rawlist",
+                message: "Who is manager? ",
+                choices: out1
+              }
+        ]).then((answer) => {
+            var name = answer.employeeRole.split(" ");
+            var managerid = out1.indexOf(answer.employeerole);
+            const query =
+                `UPDATE employee SET manager_id = ${managerid} WHERE employee.first_name = '${name[0]}' AND employee.last_name = '${name[1]}'`;
+            connection.query(query,(err, res) => {
+                if (err) throw err
+                console.table(res)
+                init();
+            })
+        })
+    })
+}
